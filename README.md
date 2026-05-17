@@ -24,7 +24,7 @@ npm install
 # (Esto creará automáticamente la carpeta 'node_modules' en la raíz)
 
 
-# =====================================================================
+## =====================================================================
 # 3. COMANDO DE INICIO (Cómo compilar la gramática y traducir)
 # =====================================================================
 # Para procesar las reglas del archivo Flujo.g4 y realizar la traducción 
@@ -32,6 +32,10 @@ npm install
 
 npm start
 
+# NOTA DE COMPATIBILIDAD: Recomiendo ejecutar en la terminal clásica 
+# (CMD / Símbolo del sistema) o Git Bash. Si se utiliza la terminal 
+# integrada de VS Code (PowerShell) y presenta algún inconveniente con 
+# los scripts, ejecutar directamente desde la consola CMD externa.
 
 # =====================================================================
 # 4. GUÍA DE USO CON EJEMPLOS DE ENTRADA

@@ -1,62 +1,72 @@
-import CalculatorLexer from "./generated/CalculatorLexer.js";
-import CalculatorParser from "./generated/CalculatorParser.js";
-import { CustomCalculatorListener } from "./CustomCalculatorListener.js";
-import { CustomCalculatorVisitor } from "./CustomCalculatorVisitor.js";
-import antlr4, { CharStreams, CommonTokenStream, ParseTreeWalker } from "antlr4";
-import readline from 'readline';
 import fs from 'fs';
+import antlr4 from 'antlr4';
+import FlujoLexer from './generated/flujoLexer.js';
+import FlujoParser from './generated/flujoParser.js';
+import CustomVisitor from './CustomVisitor.js';
 
-async function main() {
-    let input;
-
-    // Intento leer la entrada desde el archivo input - en forma sincrona.
-    try {
-        input = fs.readFileSync('input.txt', 'utf8');
-    } catch (err) {
-        // Si no es posible leer el archivo, solicitar la entrada del usuario por teclado
-        input = await leerCadena(); // Simula lectura síncrona
-        console.log(input);
-    }
-
-    // Proceso la entrada con el analizador e imprimo el arbol de analisis en formato texto
-    let inputStream = CharStreams.fromString(input);
-    let lexer = new CalculatorLexer(inputStream);
-    let tokenStream = new CommonTokenStream(lexer);
-    let parser = new CalculatorParser(tokenStream);
-    let tree = parser.prog();
+try {
+    // Leemos el archivo de entrada 
+    const input = fs.readFileSync('input.txt', 'utf-8');
     
-    // Verifico si se produjeron errores
-    if (parser.syntaxErrorsCount > 0) {
-        console.error("\nSe encontraron errores de sintaxis en la entrada.");
-    } 
-    else {
-        console.log("\nEntrada válida.");
-        const cadena_tree = tree.toStringTree(parser.ruleNames);
-        console.log(`Árbol de derivación: ${cadena_tree}`);
+    // Creamos el Lexer y obtener los Tokens
+    const chars = new antlr4.InputStream(input);
+    const lexer = new FlujoLexer(chars);
+    const tokens = new antlr4.CommonTokenStream(lexer);
+    
+    // Imprimimos la Tabla de Tokens en la consola
+    console.log("=== TABLA DE TOKENS ===");
+    tokens.fill();
+    tokens.tokens.forEach(t => {
+        if(t.type !== -1) { // Ignorar el token de fin de archivo (EOF)
+            console.log(`[@${t.tokenIndex},${t.start}:${t.stop}='${t.text}',<Tipo:${t.type}>,linea:${t.line}]`);
+        }
+    });
 
-        // Utilizo un listener y un walker para recorrer el arbol e indicar cada vez que reconoce una sentencia (stat)
-        //const listener = new CustomCalculatorListener();
-        // ParseTreeWalker.DEFAULT.walk(listener, tree);
+    // Creamos el Parser y construimos el Árbol Sintáctico
+    const parser = new FlujoParser(tokens);
+    parser.buildParseTrees = true;
+    const tree = parser.programa(); 
 
-        // Utilizo un visitor para visitar los nodos que me interesan de mi arbol
-        const visitor = new CustomCalculatorVisitor();
-        visitor.visit(tree);   
+    console.log("\n=== ÁRBOL DE ANÁLISIS ===");
+    console.log(tree.toStringTree(parser.ruleNames));
+
+// Ejecutar el Traductor (Visitor) de forma plana y directa
+    console.log("\n=== TRADUCCIÓN A JAVASCRIPT ===");
+    const visitor = new CustomVisitor();
+    
+    let codigoFinal = "// Código generado: \n\n";
+    
+    if (tree && tree.definicion) {
+        const definiciones = tree.definicion();
+        if (definiciones && definiciones.length) {
+            for (let i = 0; i < definiciones.length; i++) {
+                const def = definiciones[i];
+                let lineaTraducida = "";
+
+                // Forzamos la llamada directa a cada método del visitor según el nodo real
+                if (def.estado && def.estado()) {
+                    lineaTraducida = visitor.visitEstado(def.estado());
+                } else if (def.rol && def.rol()) {
+                    lineaTraducida = visitor.visitRol(def.rol());
+                } else if (def.transicion && def.transicion()) {
+                    lineaTraducida = visitor.visitTransicion(def.transicion());
+                } else if (def.accion && def.accion()) {
+                    lineaTraducida = visitor.visitAccion(def.accion());
+                } else if (def.notificacion && def.notificacion()) {
+                    lineaTraducida = visitor.visitNotificacion(def.notificacion());
+                }
+
+                // Si obtuvimos texto válido, lo agregamos al código final
+                if (lineaTraducida) {
+                    codigoFinal += String(lineaTraducida).trim() + "\n";
+                }
+            }
+        }
     }
+    
+    // Imprimimos el resultado de texto limpio final libre de comas estructurales
+    console.log(codigoFinal);
+
+} catch (error) {
+    console.error("Error al procesar el archivo:", error);
 }
-
-function leerCadena() {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-
-    return new Promise(resolve => {
-        rl.question("Ingrese una cadena: ", (answer) => {
-            rl.close();
-            resolve(answer);
-        });
-    });
-}
-
-// Ejecuta la función principal
-main();

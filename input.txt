@@ -1,8 +1,17 @@
-x = 2 + 3
-y = 3
-z = x + y
-z
+flujo Tesis {
+    estado Borrador inicial;
+    estado Revision;
+    estado Aprobado final;
 
+    rol Alumno puede [crear, revisar];
+    rol Profesor puede [revisar, aprobar, rechazar];
 
+    desde Borrador hacia Revision cuando Alumno.revisar;
+    
+    accion Validar {
+        asignar nota = 10;
+        registrar("Proceso de validacion completado");
+    }
 
-
+    notificar Alumno con "Tu tesis ha cambiado de estado";
+}

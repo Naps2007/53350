@@ -1,0 +1,7 @@
+flujo Tramite {
+    estado Borrador inicial;
+    estado Validando;
+    estado Aprobado final;
+    rol Usuario;
+    rol Revisor;
+}

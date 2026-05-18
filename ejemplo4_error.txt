@@ -1,0 +1,3 @@
+flujo ErrorSintactico {
+    estado Unico inicial;
+    rol Anonimo;

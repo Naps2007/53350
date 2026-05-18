@@ -1,57 +1,74 @@
-# TP Sintaxis - Compilador en ANTLR4 (Legajo: 53350)
+# TP Sintaxis - Compilador de Flujos en ANTLR4 (Legajo: 53350)
+
+Instrucciones para ejecutar compilador
 
 ```bash
 # =====================================================================
-# 1. INSTRUCCIONES DE EJECUCIÓN 
+# REQUISITOS DEL SISTEMA
 # =====================================================================
-# Para descargar el proyecto en forma local a la computadora, abrí la consola 
-# (cmd o git-cmd) y ejecutá el siguiente comando:
+# Antes de empezar, se debe contar con:
+# - Node.js (Versión 16 o superior)
+# - Java JRE instalado (Requisito obligatorio para el entorno ANTLR4)
+# - Usar terminal CMD / comand prompt para ejecutar el codigo
 
+
+# =====================================================================
+# INSTRUCCIONES (Paso a Paso)
+# =====================================================================
+# A) Clonar el repositorio público de forma local mediante HTTPS:
 git clone https://github.com/Naps2007/53350.git
 
-# NOTA: Después de clonar, recordá entrar a la carpeta del proyecto 
-# usando el comando: cd 53350
+# B) Entrar a la carpeta raíz del proyecto (nombrada con el legajo):
+cd 53350
 
-
-# =====================================================================
-# 2. INSTALACIÓN DE DEPENDENCIAS (Requisito obligatorios)
-# =====================================================================
-# Estando parado dentro de la carpeta del repositorio en la consola, 
-# instalá ANTLR4 y las librerías necesarias con el siguiente comando:
-
+# C) Instalar las dependencias por primera vez para crear 'node_modules':
 npm install
 
-# (Esto creará automáticamente la carpeta 'node_modules' en la raíz)
-
-
-## =====================================================================
-# 3. COMANDO DE INICIO (Cómo compilar la gramática y traducir)
-# =====================================================================
-# Para procesar las reglas del archivo Flujo.g4 y realizar la traducción 
-# del programa de prueba, ejecutá en tu terminal de comandos:
-
+# D) Ejecutar el comando de inicio para activar el análisis y traducción:
 npm start
 
-# NOTA DE COMPATIBILIDAD: Recomiendo ejecutar en la terminal clásica 
-# (CMD / Símbolo del sistema) o Git Bash. Si se utiliza la terminal 
-# integrada de VS Code (PowerShell) y presenta algún inconveniente con 
-# los scripts, ejecutar directamente desde la consola CMD externa.
 
 # =====================================================================
-# 4. GUÍA DE USO CON EJEMPLOS DE ENTRADA
+# GUÍA DE COMO USAR EJEMPLOS DE PRUEBA
 # =====================================================================
-# El analizador lee los enunciados de entrada directamente desde un archivo.
-# Para testear el funcionamiento con los ejemplos provistos:
+# El proyecto viene preconfigurado en 'index.js' para leer 'ejemplo1_ok.txt'.
+# Se incluyen 4 archivos de prueba:
 # 
-# A) Modificá el contenido del archivo 'input.txt' con el flujo que desees evaluar.
-# B) Volvé a ejecutar en la consola el comando: npm start
-
-
-# =====================================================================
-# 5. NOTAS Y ACLARACIONES ADICIONALES (Resultado de la traducción)
-# =====================================================================
-# El traductor de flujos procesará la sintaxis y el árbol de derivación.
-# El código final traducido a JavaScript se ve 
-# en la consola, ubicado exactamente abajo de:
+#  - ejemplo1_ok.txt     -> (Éxito)
+#  - ejemplo2_ok.txt     -> (Éxito)
+#  - ejemplo3_error.txt  -> Error Léxico (Palabra clave 'estao')
+#  - ejemplo4_error.txt  -> Error Sintáctico (Falta llave de cierre)
 # 
-# === TRADUCCIÓN A JAVASCRIPT ===
+# Para probar cualquiera de los otros ejemplos:
+# 1. Abrí el archivo 'index.js' en VS Code.
+# 2. Modificá la línea de lectura cambiando 'ejemplo1_ok.txt' por el ejemplo deseado.
+#    Ejemplo: const input = fs.readFileSync('ejemplo3_error.txt', 'utf-8');
+# 3. Guardá el archivo (Ctrl + S) y volvé a ejecutar: npm start
+
+
+# =====================================================================
+# EXPLICACIÓN DE LOS RESULTADOS ESPERADOS EN CONSOLA
+# =====================================================================
+# Una vez ejecutado el programa, la terminal mostrará en orden:
+# 
+# 1) ANÁLISIS LÉXICO Y SINTÁCTICO: Confirmación de validez. Si hay fallas,
+#    detalla la línea exacta y la causa del problema detectado por ANTLR.
+# 
+# 2) TABLA DE LEXEMAS-TOKENS: Lista impresa en consola que relaciona cada
+#    palabra reconocida con su respectiva categoría gramatical (Ej: FLUJO, ID).
+# 
+# 3) ÁRBOL DE ANÁLISIS SINTÁCTICO: Representación jerárquica de la estructura
+#    del código en formato de texto plano.
+# 
+# 4) TRADUCCIÓN E INTERPRETACIÓN: Código final completamente traducido 
+#    a JavaScript limpio, visible justo debajo de la línea:
+#    === TRADUCCIÓN A JAVASCRIPT ===
+
+
+# =====================================================================
+# 5. ACLARACIONES TÉCNICAS
+# =====================================================================
+# - La gramática fue adaptada íntegramente al lenguaje de automatización
+#   de flujos solicitado en la consigna (reglas de estado, rol y transición).
+# - Se implementó un patrón Visitor en JavaScript ('CustomVisitor.js') para
+#   recorrer el árbol sintáctico y generar la traducción limpia a JS.

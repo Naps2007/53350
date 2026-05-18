@@ -1,0 +1,4 @@
+flujo ErrorLexico {
+    estao Invalido inicial;
+    estado Fin final;
+}

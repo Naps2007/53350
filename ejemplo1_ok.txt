@@ -1,0 +1,5 @@
+flujo MiProceso {
+    estado Inicial inicial;
+    estado Fin final;
+rol Administrador puede [crear];
+}
